@@ -1,0 +1,27 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="palm" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#00ffe6" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="transparent" />
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- palm -->
+  <ellipse cx="100" cy="120" rx="40" ry="50" fill="url(#palm)" filter="url(#glow)" />
+
+  <!-- fingers (stylized arcs) -->
+  <path d="M60 90 Q75 50 100 55" stroke="#00ffe6" stroke-width="6" stroke-linecap="round" opacity="0.8" />
+  <path d="M80 85 Q95 45 120 55" stroke="#00ffe6" stroke-width="5" stroke-linecap="round" opacity="0.7" />
+  <path d="M100 88 Q115 48 140 58" stroke="#00ffe6" stroke-width="4" stroke-linecap="round" opacity="0.6" />
+  <path d="M120 92 Q135 52 155 65" stroke="#00ffe6" stroke-width="3" stroke-linecap="round" opacity="0.5" />
+
+  <!-- thumb arc -->
+  <path d="M65 130 Q45 120 50 90" stroke="#00ffe6" stroke-width="6" stroke-linecap="round" opacity="0.8" />
+</svg>
