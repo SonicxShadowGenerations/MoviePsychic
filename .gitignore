@@ -1,0 +1,26 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.*
+
+# Build output
+dist/
+build/
+out/
+.cache/
+
+# Frontend frameworks
+.next/
+.vite/
+.svelte-kit/
+coverage/
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
