@@ -1,7 +1,8 @@
+// CardArc.jsx
 import React from 'react';
 import MovieCard from './MovieCard';
 
-export default function CardArc({ onProject }) {
+export default function CardArc({ onProject, onPick }) {
   const movies = [
     { title: 'Inception', image: '/images/inception.jpg' },
     { title: 'Interstellar', image: '/images/interstellar.jpg' },
@@ -34,14 +35,19 @@ export default function CardArc({ onProject }) {
 
         return (
           <div
-            key={i}
+            key={m.title}
             style={{
               transform: `rotate(${rotate}deg) translateY(${translateY}px)`,
               transformOrigin: 'center top',
               transition: 'transform 0.5s ease',
             }}
           >
-            <MovieCard title={m.title} image={m.image} onProject={onProject} />
+            <MovieCard
+              title={m.title}
+              image={m.image}
+              onProject={onProject}
+              onPick={onPick}     {/* 👈 NEW */}
+            />
           </div>
         );
       })}

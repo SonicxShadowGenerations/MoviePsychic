@@ -3,9 +3,17 @@ import PsychicHands from './PsychicHands.jsx';
 import PsychicFigure from './PsychicFigure';
 import SpeechBubble from './SpeechBubble';
 import CardArc from './CardArc';
+import SelectedTray from './SelectedTray';
+import './PsychicScene.css'; // keep your projection styles here
 
 export default function PsychicScene() {
   const [projectedImage, setProjectedImage] = useState(null);
+  const [hand, setHand] = useState([]); // picked cards go here
+
+  const handlePicked = (item) => {
+    // push to hand; allow duplicates to be filtered in the tray (or de-dupe here)
+    setHand(prev => [...prev, item]);
+  };
 
   return (
     <div
@@ -25,7 +33,6 @@ export default function PsychicScene() {
       <PsychicHands />
       <PsychicFigure />
 
-      {/* 🔮 Projection Layer */}
       {projectedImage && (
         <div className="projection">
           <img src={projectedImage} alt="Projected Movie" />
@@ -34,8 +41,11 @@ export default function PsychicScene() {
 
       <SpeechBubble text="Pick a card, and I will reveal your fate..." />
 
-      {/* Pass callback down to CardArc */}
-      <CardArc onProject={setProjectedImage} />
+      {/* pass both project + pick handlers */}
+      <CardArc onProject={setProjectedImage} onPick={handlePicked} />
+
+      {/* bottom-center tray */}
+      <SelectedTray items={hand} />
     </div>
   );
 }

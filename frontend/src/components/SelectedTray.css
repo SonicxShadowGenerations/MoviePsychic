@@ -1,0 +1,59 @@
+.selected-tray {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;                 /* bottom-center of visible screen */
+    transform: translate(-50%, 120%); /* start off-screen */
+    z-index: 5;                   /* above hands/cards */
+    width: min(88vw, 820px);
+    min-height: 90px;
+    border: 2px solid #ff3b3b;    /* red border */
+    border-radius: 16px;          /* rounded edges */
+    background: rgba(255, 0, 0, 0.06);
+    backdrop-filter: blur(4px);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 18px rgba(255, 59, 59, 0.25);
+    transition: transform 380ms ease;
+    pointer-events: auto;
+  }
+  
+  .selected-tray.show {
+    transform: translate(-50%, 0); /* slide up into view */
+  }
+  
+  .tray-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  
+  .tray-hint {
+    color: #ffb4b4;
+    font-style: italic;
+    opacity: 0.8;
+  }
+  
+  .tray-card {
+    flex: 0 0 auto;
+    width: 66px;
+    height: 96px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,59,59,0.6);
+    box-shadow: 0 0 10px rgba(255,59,59,0.25);
+  }
+  
+  .tray-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  @media (max-width: 520px) {
+    .selected-tray { min-height: 78px; }
+    .tray-card { width: 56px; height: 82px; }
+  }
+  
