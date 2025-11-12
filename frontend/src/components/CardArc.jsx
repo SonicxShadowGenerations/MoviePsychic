@@ -46,7 +46,7 @@ export default function CardArc({ onProject, onPick }) {
               title={m.title}
               image={m.image}
               onProject={onProject}
-              onPick={onPick}     {/* 👈 NEW */}
+              onPick={onPick}     
             />
           </div>
         );
