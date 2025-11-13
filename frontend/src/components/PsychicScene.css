@@ -390,7 +390,7 @@
 }
 .psychic-search-bar {
   position: absolute;
-  top: 16vh;              /* move this up/down to taste */
+  top: 25vh;              /* move this up/down to taste */
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
@@ -404,6 +404,10 @@
   padding: 6px 12px;
   border: 1px solid rgba(0, 255, 230, 0.45);
   box-shadow: 0 0 12px rgba(0, 255, 230, 0.25);
+  box-shadow:
+    0 0 14px rgba(0, 255, 230, 0.5),
+    0 0 40px rgba(0, 255, 230, 0.15);
+
 }
 
 .psychic-search-bar input {
@@ -413,6 +417,9 @@
   color: #e4f8ff;
   font-size: 0.9rem;
   min-width: 240px;
+  border-radius: 50px;
+  padding: 4px 10px;
+
 }
 
 .psychic-search-bar button {
@@ -422,7 +429,8 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  background: radial-gradient(circle at 30% 0%, #00ffe6 0%, #0066ff 70%);
+  background: radial-gradient(circle at 30% 30%, #00ffe6 0%, #0095ff 60%, #0040ff 100%);
+
   color: #020114;
   box-shadow: 0 0 10px rgba(0, 255, 230, 0.5);
 }
