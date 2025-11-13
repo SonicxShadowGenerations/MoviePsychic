@@ -1,35 +1,50 @@
+/* Base card */
 .movie-card {
-  animation: floatCard 3.5s ease-in-out infinite;
-  transition: transform 0.3s ease;
+  perspective: 1000px;
+  width: 110px;
+  height: 160px;
+  cursor: pointer;
+  outline: none;
+
+  /* smooth movement & scaling when phase changes */
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
-.movie-card:hover {
-  transform: translateY(-20px) scale(1.05);
-  box-shadow: 0 0 20px rgba(0,255,220,0.6);
+
+/* idle: floating gently */
+.movie-card.phase-idle {
+  animation: floatCard 3.5s ease-in-out infinite;
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
 @keyframes floatCard {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%      { transform: translateY(-10px) scale(1); }
 }
-.movie-card {
-  perspective: 1000px;
-  width: 100px;
-  height: 150px;
-  cursor: pointer;
+
+/* flipped, but still in place */
+.movie-card.phase-flipped {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* flying: shrink + move down toward the tray */
+.movie-card.phase-flying {
+  animation: none; /* stop floating */
+  transform: translateY(220px) scale(0.45);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .card-inner {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.8s;
+  transition: transform 0.4s ease;
   transform-style: preserve-3d;
 }
 
+/* flip effect */
 .movie-card.flipped .card-inner {
   transform: rotateY(180deg);
 }
@@ -37,8 +52,7 @@
 .card-front,
 .card-back {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   backface-visibility: hidden;
   border: 2px solid #ffd95c;
   border-radius: 8px;
@@ -50,44 +64,9 @@
   background: #2e0147;
 }
 
-/* back face (magnifier side) */
-.card-back {
-  transform: rotateY(180deg);
-  font-size: 2rem;
-  background: radial-gradient(circle at center, #00ffe6 10%, #2e0147 70%);
-}
-
-
-/* give each card a slightly different float phase */
-.movie-card:nth-child(1) { animation-delay: 0s; }
-.movie-card:nth-child(2) { animation-delay: 0.4s; }
-.movie-card:nth-child(3) { animation-delay: 0.8s; }
-.movie-card:nth-child(4) { animation-delay: 1.2s; }
-.movie-card:nth-child(5) { animation-delay: 1.6s; }
-
-.movie-card.flipped .card-back::after {
-  content: "";
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  top: 20%;
-  left: 30%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5) 0%, transparent 70%);
-  box-shadow: 0 0 10px rgba(0,255,220,0.4);
-  animation: moveLens 3s ease-in-out infinite alternate;
-}
-
 .card-back {
   transform: rotateY(180deg);
   background-size: cover;
   background-position: center;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0,255,220,0.4);
-}
-
-
-@keyframes moveLens {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(20px, 10px) scale(1.1); }
+  box-shadow: 0 0 15px rgba(0, 255, 220, 0.4);
 }
