@@ -388,3 +388,42 @@
     min-height: 100px;
   }
 }
+.psychic-search-bar {
+  position: absolute;
+  top: 16vh;              /* move this up/down to taste */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  background: rgba(10, 0, 24, 0.78);
+  border-radius: 999px;
+  padding: 6px 12px;
+  border: 1px solid rgba(0, 255, 230, 0.45);
+  box-shadow: 0 0 12px rgba(0, 255, 230, 0.25);
+}
+
+.psychic-search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e4f8ff;
+  font-size: 0.9rem;
+  min-width: 240px;
+}
+
+.psychic-search-bar button {
+  border-radius: 999px;
+  border: none;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: radial-gradient(circle at 30% 0%, #00ffe6 0%, #0066ff 70%);
+  color: #020114;
+  box-shadow: 0 0 10px rgba(0, 255, 230, 0.5);
+}
+

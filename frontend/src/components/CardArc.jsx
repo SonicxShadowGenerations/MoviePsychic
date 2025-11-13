@@ -1,39 +1,7 @@
-// CardArc.jsx
-import React, { useState } from "react";
+import React from "react";
 import MovieCard from "./MovieCard";
 
-const initialMovies = [
-  { title: "Inception", image: "/images/inception.jpg" },
-  { title: "Interstellar", image: "/images/interstellar.jpg" },
-  { title: "Tenet", image: "/images/tenet.jpg" },
-  { title: "Dune", image: "/images/dune.jpg" },
-  { title: "Matrix", image: "/images/matrix.jpg" },
-];
-
-export default function CardArc({ onProject, onPick }) {
-  const [movies, setMovies] = useState(initialMovies);
-  const [query, setQuery] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
-
-    // pick a random card in the arc to replace
-    const idx = Math.floor(Math.random() * movies.length);
-
-    setMovies((prev) => {
-      const next = [...prev];
-      next[idx] = {
-        title: trimmed,
-        image: null, // no poster yet → MovieCard uses your glowing gradient
-      };
-      return next;
-    });
-
-    setQuery("");
-  };
-
+export default function CardArc({ movies, onProject, onPick }) {
   const total = movies.length;
   const middleIndex = Math.floor(total / 2);
 
@@ -49,8 +17,6 @@ export default function CardArc({ onProject, onPick }) {
         transform: "translateY(-140px)",
       }}
     >
-      
-      {/* 🎴 Arc of cards */}
       <div
         style={{
           position: "relative",
