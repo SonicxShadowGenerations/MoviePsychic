@@ -49,53 +49,7 @@ export default function CardArc({ onProject, onPick }) {
         transform: "translateY(-140px)",
       }}
     >
-      {/* 🔍 Search bar */}
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          gap: "8px",
-          alignItems: "center",
-          background: "rgba(10, 0, 24, 0.9)",
-          borderRadius: "999px",
-          padding: "6px 10px",
-          border: "1px solid rgba(0, 255, 230, 0.45)",
-          boxShadow: "0 0 12px rgba(0, 255, 230, 0.25)",
-        }}
-      >
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Name a movie to swap into the arc..."
-          style={{
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            color: "#e4f8ff",
-            fontSize: "0.9rem",
-            minWidth: "220px",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            borderRadius: "999px",
-            border: "none",
-            padding: "4px 10px",
-            fontSize: "0.8rem",
-            fontWeight: 600,
-            cursor: "pointer",
-            background:
-              "radial-gradient(circle at 30% 0%, #00ffe6 0%, #0066ff 70%)",
-            color: "#020114",
-            boxShadow: "0 0 10px rgba(0, 255, 230, 0.5)",
-          }}
-        >
-          Swap
-        </button>
-      </form>
-
+      
       {/* 🎴 Arc of cards */}
       <div
         style={{

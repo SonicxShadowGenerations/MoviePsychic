@@ -83,6 +83,20 @@ export default function PsychicScene() {
 
       {/* main psychic scene */}
       <div className="psychic-core">
+        {/* 🔍 Floating Search Bar */}
+<form
+  onSubmit={handleSwapSearch}
+  className="psychic-search-bar"
+>
+  <input
+    type="text"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    placeholder="Whisper a movie into the aether..."
+  />
+  <button type="submit">Swap</button>
+</form>
+
         <PsychicHands shake={shake} />
         <PsychicFigure />
 
