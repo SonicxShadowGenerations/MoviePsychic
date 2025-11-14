@@ -4,13 +4,15 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: "happy-dom",          // nicer for StackBlitz than jsdom
+    environment: "happy-dom",
     setupFiles: "./src/testSetup.js",
     globals: true,
 
-    // Try to avoid fork pool by preferring threads;
-    // if this version ignores `pool`, it's harmless.
-    pool: "threads",
+    // 👉 run tests in a single thread, no worker pool
+    threads: false,
+
+    // don't force any pool type – let Vitest stay in-process
+    // pool: undefined,
 
     coverage: {
       provider: "v8",
