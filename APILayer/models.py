@@ -1,6 +1,6 @@
+
 from django.db import models
 from django.conf import settings
-from backend.main import User, Movie
 import django
 
 settings.configure()
@@ -30,5 +30,3 @@ class RawMovieData(models.Model):
 
     #def __str__(self):
         #return f"{self.user.username} rated {self.movie.title} {self.rating}"
-
-

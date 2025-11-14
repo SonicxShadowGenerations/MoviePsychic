@@ -1,5 +1,8 @@
-from APILayer.models import RawMovieData
-from APILayer.tmdb_client import get_movie_details
+from models import RawMovieData
+from tmdb_client import get_movie_details
+import os, django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "moviepsychic.settings")
+django.setup()
 
 def fetch_and_store_movie(tmdbId):
     data = get_movie_details(tmdbId)
@@ -15,5 +18,6 @@ def fetch_and_store_movie(tmdbId):
     return movie.title
 
 def main():
-    print(fetch_and_store_movie("1"))
-    print(fetch_and_store_movie("2"))
+    print(f"{fetch_and_store_movie(1026722).title()}")
+
+main()

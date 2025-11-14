@@ -1,3 +1,4 @@
+
 import requests
 
 API_KEY = "19f7be89c64787879e83cc5f17232862"
@@ -18,7 +19,7 @@ url2 = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
 
 response = requests.get(url2, headers=headers)
 
-#print(response.text)
+print(response.text)
 
 def tmdb_get(endpoint, params=None):
     if params is None:
