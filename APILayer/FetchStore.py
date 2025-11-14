@@ -1,7 +1,7 @@
 from models import RawMovieData
 from tmdb_client import get_movie_details
 import os, django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "moviepsychic.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "APILayer.settings")
 django.setup()
 
 class FASMovie():
@@ -16,11 +16,10 @@ class FASMovie():
                 "poster_path": data.get("poster_path"),
             }
      )
-        return movie.title
+        return movie
 
 
 def main():
-
-    print(f"")
-
-main()
+    testMovie = RawMovieData(1026722)
+    title = testMovie.title
+    print(title)

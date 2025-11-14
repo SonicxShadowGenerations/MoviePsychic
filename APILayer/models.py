@@ -16,6 +16,10 @@ class RawMovieData(models.Model):
     ratings = models.IntegerField()
     avgRating = models.FloatField()
 
+    class Meta:
+        app_label = 'APILayer'
+        db_table = 'raw_movie_data'
+
     def __str__(self):
         return self.title
 
