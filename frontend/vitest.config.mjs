@@ -4,12 +4,19 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   test: {
+    // Use a browser-like DOM environment for React Testing Library
     environment: "happy-dom",
+
+    // Load jest-dom matchers
     setupFiles: "./src/testSetup.js",
+
     globals: true,
 
-    // 👇 IMPORTANT for StackBlitz: run tests in a single thread
+    // 👇 IMPORTANT: run everything in a single process in StackBlitz
     threads: false,
+    pool: "threads", // no forks, just simple threads disabled
+
+    include: ["src/__tests__/**/*.test.{js,jsx,ts,tsx}"],
 
     coverage: {
       provider: "v8",

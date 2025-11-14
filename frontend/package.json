@@ -7,10 +7,11 @@
         "start": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "test": "vitest",
-        "test:ui": "vitest --ui",
-        "coverage": "vitest run --coverage"
-    },
+        "test": "vitest --pool=threads --threads=false",
+        "test:ui": "vitest --ui --pool=threads --threads=false",
+        "coverage": "vitest run --coverage --pool=threads --threads=false"
+      },
+      
     "dependencies": {
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
