@@ -1,9 +1,13 @@
 from django.test import TestCase
 from unittest.mock import patch
 from APILayer.tmdb_client import get_movie_details, search_movies
+#import os, django
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "APILayer.settings")
+#django.setup()
 
 class TMDBClientTests(TestCase):
 
+    # Test for returning movie details given an ID
     @patch("APILayer.tmdb_client.requests.get")
     def test_get_movie_details(self, mock_get):
         # Mock response JSON
@@ -19,6 +23,7 @@ class TMDBClientTests(TestCase):
         self.assertEqual(data["title"], "Inception")
         self.assertEqual(data["id"], 123)
 
+    # Test for searching for a movie by title
     @patch("APILayer.tmdb_client.requests.get")
     def test_search_movies(self, mock_get):
         mock_get.return_value.json.return_value = {

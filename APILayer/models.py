@@ -15,8 +15,6 @@ class RawMovieData(models.Model):
     director = models.CharField(max_length=200)
     ratings = models.IntegerField()
     avgRating = models.FloatField()
-    class Meta:
-        app_label = "APILayer"
 
     def __str__(self):
         return self.title
