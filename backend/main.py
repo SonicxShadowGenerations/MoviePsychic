@@ -31,11 +31,11 @@ class Movie:
         return self.avgRating
     
     def updateRatings(self, rating):
-        self.ratings.append(rating)
-        if self.avgRating is None:
-            self.avgRating = rating
-        else:
+        if (rating >=0 and rating <= 10):
+            self.ratings.append(rating)
             self.avgRating = (self.avgRating + rating) / len(self.ratings)
+        else:
+            print("Error: rating invalid")
 
 class RatedMovie(Movie):
     def __init__(self, parentMovie, personalRating):
@@ -64,17 +64,28 @@ class User:
         self.movies = []
 
     def rateMovie(self, movie, rating):
-        ratedMovie = RatedMovie(movie, rating)
-        self.movies.append(ratedMovie)
-        movie.updateRatings(rating)
-        self.movies = sorted(self.movies, key=lambda m: m.getTitle())
+        if movie == None or rating == None:
+            print("Error: invalid movie")
+        elif self.getMovies().count(movie) == 0:
+            ratedMovie = RatedMovie(movie, rating)
+            self.getMovies().append(ratedMovie)
+            movie.updateRatings(rating)
+            self.getMovies().sort(key=RatedMovie.getTitle())
+        else:
+            ratedMovie = RatedMovie(movie, rating)
 
         if rating >= 8:
-            self.genres.add(movie.getGenre)
-            self.directors.add(movie.getDirector)
+            self.getGenres().add(movie.getGenre)
+            self.getDirectors().add(movie.getDirector)
     
     def getMovies(self):
         return self.movies
+    
+    def getGenres(self):
+        return self.genres
+    
+    def getDirectors(self):
+        return self.directors
 
 class Comparator:
 
@@ -89,6 +100,9 @@ class Comparator:
 
         # Build the set of movies that both users have watched
         sharedMovies = list(set(self.comparingUser.getMovies()) & set(self.comparedUser.getMovies()))
+
+        for movie in sharedMovies:
+            print(movie.getTitle())
 
         for movie1 in self.comparingUser.getMovies():
             for movie2 in self.comparedUser.getMovies():
@@ -131,36 +145,7 @@ class Recommender:
         print(self.recommendedMovies)
 
 def main():
-    userA = User("Michael")
-    userB = User("Jessica")
-    movieA = Movie("Oppenheimer", "2023", "Thriller", "Christopher Nolan", 0)
-    movieB = Movie("Inception", "2010", "Science Fiction", "Christopher Nolan", 1)
-    movieC = Movie("Interstellar", "2014", "Science Fiction", "Christopher Nolan", 2)
-    movieD = Movie("The Matrix", "1999", "Science Fiction", "The Wachowskis", 3)
-    movieE = Movie("Dune", "2021", "Science Fiction", "Denis Villeneuve", 4)
-    movieF = Movie("Citizen Kane", "1941", "Drama", "Orson Welles", 5)
-    movieG = Movie("Casablanca", "1942", "Drama", "Michael Curtiz", 6)
-
-    userA.rateMovie(movieA, 9)
-    userA.rateMovie(movieC, 3)
-    userA.rateMovie(movieD, 10)
-    userA.rateMovie(movieE, 7)
-    userA.rateMovie(movieG, 9)
-    userA.rateMovie(movieF, 10)
-
-    print(userA.getMovies())
-
-    userB.rateMovie(movieA, 9)
-    userB.rateMovie(movieB, 8)
-    userB.rateMovie(movieC, 3)
-    userB.rateMovie(movieD, 10)
-    userB.rateMovie(movieE, 7)
-    userB.rateMovie(movieG, 9)
-
-    print(userB.getMovies())
-
-    comparator = Comparator(userA, userB)
-    comparator.compare()
+    return
 
 if __name__ == "__main__":
     main()
