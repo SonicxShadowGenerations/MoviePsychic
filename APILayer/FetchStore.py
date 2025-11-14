@@ -1,5 +1,5 @@
-from moviepsychic.models import RawMovieData
-from moviepsychic.tmdb_client import get_movie_details
+from APILayer.models import RawMovieData
+from APILayer.tmdb_client import get_movie_details
 
 def fetch_and_store_movie(tmdb_id):
     data = get_movie_details(tmdb_id)

@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from backend.main import User, Movie
-import os
 import django
 
 settings.configure()
