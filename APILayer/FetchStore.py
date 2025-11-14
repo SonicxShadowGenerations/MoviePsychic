@@ -1,10 +1,10 @@
 from APILayer.models import RawMovieData
 from APILayer.tmdb_client import get_movie_details
 
-def fetch_and_store_movie(tmdb_id):
-    data = get_movie_details(tmdb_id)
+def fetch_and_store_movie(tmdbId):
+    data = get_movie_details(tmdbId)
     movie, created = RawMovieData.objects.get_or_create(
-        tmdb_id=tmdb_id,
+        tmdbId=tmdbId,
         defaults={
             "title": data.get("title"),
             "overview": data.get("overview"),
@@ -12,4 +12,8 @@ def fetch_and_store_movie(tmdb_id):
             "poster_path": data.get("poster_path"),
         }
     )
-    return movie
+    return movie.title
+
+def main():
+    print(fetch_and_store_movie("1"))
+    print(fetch_and_store_movie("2"))

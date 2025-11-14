@@ -15,18 +15,20 @@ class RawMovieData(models.Model):
     director = models.CharField(max_length=200)
     ratings = models.IntegerField()
     avgRating = models.FloatField()
+    class Meta:
+        app_label = "APILayer"
 
     def __str__(self):
         return self.title
 
-class Rating(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+#class Rating(models.Model):
+    #user = models.OneToOneField(User, on_delete= models.CASCADE, primary_key= True)
+    #movie = models.ForeignKey(Movie, on_delete=models.CASCADE, primary_key = True)
+    #rating = models.IntegerField()
+    #created_at = models.DateTimeField(auto_now_add=True)
 
 
-    def __str__(self):
-        return f"{self.user.username} rated {self.movie.title} {self.rating}"
+    #def __str__(self):
+        #return f"{self.user.username} rated {self.movie.title} {self.rating}"
 
 
