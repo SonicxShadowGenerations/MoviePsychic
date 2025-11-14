@@ -7,6 +7,10 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: "./src/testSetup.js",
     globals: true,
+
+    // 👇 IMPORTANT for StackBlitz: run tests in a single thread
+    threads: false,
+
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
