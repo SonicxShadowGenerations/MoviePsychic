@@ -1,8 +1,14 @@
-import { expect, test } from "vitest";
+// src/__tests__/basic.test.jsx
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import App from "../App.jsx";
 
-test("renders without crashing", () => {
-  render(<App />);
-  expect(screen.getByText(/Pick a card/i)).toBeInTheDocument();
+describe("MoviePsychic App", () => {
+  it("renders the main prompt text", () => {
+    render(<App />);
+    // Adjust this text if your SpeechBubble text changed
+    expect(
+      screen.getByText(/Pick a card, and I will reveal your fate/i)
+    ).toBeInTheDocument();
+  });
 });

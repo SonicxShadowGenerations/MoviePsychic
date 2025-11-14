@@ -4,12 +4,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: "jsdom",
+    environment: "happy-dom",
     setupFiles: "./src/testSetup.js",
     globals: true,
     coverage: {
       provider: "v8",
-      reporter: ["text", "html"]
-    }
-  }
+      reporter: ["text", "html"],
+    },
+  },
 });
