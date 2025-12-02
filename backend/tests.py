@@ -1,5 +1,5 @@
 import unittest
-from .main import Movie, User, Comparator, Recommender
+from main import Movie, User, Comparator, Recommender
 
 
 class TestMovieMethods(unittest.TestCase):
