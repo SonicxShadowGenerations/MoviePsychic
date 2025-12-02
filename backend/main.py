@@ -185,6 +185,13 @@ class Comparator:
 
         return self.compatible
 
+class Searcher:
+    def __init__(self, query):
+        self.query = query
+    
+    def search(self):
+        #pass query on to searcher
+        return #the top 3 closest matches. frontend needs to display the full results.
 
 class Recommender:
     """Very small stub used by the tests/imports.
@@ -206,13 +213,26 @@ class Recommender:
         for other in self.users:
             if Comparator(self.user, other).compare():
                 # Copy all of their movies into userMovies
-                for movie in other.getMovies:
-                    self.userMovies.add(movie)
+                self.userMovies = other.getMovies().difference(self.user.getMovies())
                 break
+    
+    def search(self):
+        directors = " ,".join(self.user.getDirectors())
+        genres = " ,".join(self.user.getGenres())
+        query = directors + genres
+        self.generalMovies = Searcher(query).search()
 
     def recommendMovies(self):
-        """Combine user-specific and general pools into recommendations."""
-        self.recommendedMovies = self.userMovies.union(self.generalMovies)
+        self.userComparison
+        self.search
+        holdMovies = self.userMovies.union(self.generalMovies)
+        count = 0
+        for movie in holdMovies: #Recommends only 5 movies
+            if count < 5:
+                self.recommendedMovies.add(movie)
+                count = count + 1
+            else:
+                break
         return self.recommendedMovies
 
 
