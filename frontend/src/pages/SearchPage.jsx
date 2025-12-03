@@ -1,38 +1,36 @@
-import React, { useState } from "react";
-import { searchMovies, storeMovie } from "../api";
-import MovieCard from "../components/MovieCard";
+const BASE = "http://127.0.0.1:8000/api";
 
-export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+export async function searchMovies(query) {
+  const res = await fetch(`${BASE}/search/?q=${encodeURIComponent(query)}`);
+  return res.json();
+}
 
-  async function handleSearch(e) {
-    e.preventDefault();
-    const data = await searchMovies(query);
-    setResults(data.results || []);
-  }
+export async function storeMovie(id) {
+  const res = await fetch(`${BASE}/store/${id}/`, {
+    method: "POST"
+  });
+  return res.json();
+}
 
-  async function handleStore(id) {
-    await storeMovie(id);
-    alert("Stored!");
-  }
+export async function getMovie(id) {
+  const res = await fetch(`${BASE}/movie/${id}/`);
+  return res.json();
+}
 
-  return (
-    <div className="search-page">
-      <form onSubmit={handleSearch}>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for a movie..."
-        />
-        <button type="submit">Search</button>
-      </form>
+export async function rankMovies(ids) {
+  const res = await fetch(`${BASE}/rank/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids })
+  });
+  return res.json();
+}
 
-      <div className="results-grid">
-        {results.map((m) => (
-          <MovieCard key={m.id} movie={m} onStore={handleStore} />
-        ))}
-      </div>
-    </div>
-  );
+export async function recommendMovies(ids) {
+  const res = await fetch(`${BASE}/recommend/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids })
+  });
+  return res.json();
 }

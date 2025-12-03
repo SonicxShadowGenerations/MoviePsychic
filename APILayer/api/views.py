@@ -103,3 +103,4 @@ def recommend_movies(request):
     rec_results = tmdb_search(base_title)
 
     return JsonResponse(rec_results.get("results", []), safe=False)
+

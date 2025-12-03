@@ -5,28 +5,42 @@ import MovieCard from "../components/MovieCard";
 export default function RecommendPage() {
   const [ids, setIds] = useState("");
   const [recs, setRecs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   async function handleRecommend() {
-    const arr = ids.split(",").map((x) => x.trim());
-    const data = await recommendMovies(arr);
-    setRecs(data.recommendations || []);
+    const arr = ids
+      .split(",")
+      .map(x => x.trim())
+      .filter(x => x.length > 0);
+
+    if (!arr.length) return;
+
+    setLoading(true);
+    try {
+      const data = await recommendMovies(arr);
+      setRecs(data.recommendations || []);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div>
-      <h2>Recommended Movies</h2>
+    <div className="recommend-page">
+      <h2 style={{ color: "white" }}>Recommendations</h2>
 
       <input
         value={ids}
         onChange={(e) => setIds(e.target.value)}
-        placeholder="Enter stored TMDB IDs"
+        placeholder="Enter TMDB IDs separated by commas"
       />
 
-      <button onClick={handleRecommend}>Recommend</button>
+      <button onClick={handleRecommend}>Reveal My Fate</button>
+
+      {loading && <p style={{ color: "white" }}>Consulting the spirits…</p>}
 
       <div className="results-grid">
         {recs.map((m) => (
-          <MovieCard key={m.tmdbId} movie={m} />
+          <MovieCard key={m.tmdbId} movie={m} onStore={() => {}} />
         ))}
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import SearchPage from "./pages/SearchPage";
 import RankingPage from "./pages/RankingPage";
 import RecommendPage from "./pages/RecommendPage";
