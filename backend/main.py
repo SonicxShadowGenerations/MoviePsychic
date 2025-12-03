@@ -1,3 +1,7 @@
+from django.http import JsonResponse
+from .tmdb_client import search_movies
+
+
 class Movie:
     """
     Simple movie entity used by the backend logic and tests.
@@ -190,8 +194,8 @@ class Searcher:
         self.query = query
     
     def search(self):
-        #pass query on to searcher
-        return #the top 3 closest matches. frontend needs to display the full results.
+        results = search_movies(self.query, limit=3)
+        return results
 
 class Recommender:
     """Very small stub used by the tests/imports.
