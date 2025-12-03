@@ -1,84 +1,69 @@
-import React, { useState, useEffect } from "react";
-import PsychicHands from "./PsychicHands.jsx";
+import React, { useEffect, useState } from "react";
+import PsychicHands from "./PsychicHands";
 import PsychicFigure from "./PsychicFigure";
 import SpeechBubble from "./SpeechBubble";
 import CardArc from "./CardArc";
 import SelectedTray from "./SelectedTray";
-import { searchMovies, recommendMovies, getRandomMovies } from "../api";
+import { fetchRandomMovies, searchMovies, recommendMovies } from "../api";
 import "./PsychicScene.css";
 
 export default function PsychicScene() {
-  const [movies, setMovies] = useState([]);        // arc movies
-  const [projectedImage, setProjectedImage] = useState(null);
+  const [movies, setMovies] = useState([]);
   const [hand, setHand] = useState([]);
   const [shake, setShake] = useState(false);
-  const [recommendations, setRecommendations] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [recommendations, setRecommendations] = useState([]);
 
-  // 🌙 Load random movies on startup
+  // 🔮 Load 5 random TMDB movies when scene starts
   useEffect(() => {
-    async function loadRandom() {
-      const data = await getRandomMovies();
-      const items = (data.results || []).slice(0, 5).map((movie) => ({
-        id: movie.id,
-        title: movie.title,
-        image: movie.poster_path
-          ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-          : null,
-      }));
-      setMovies(items);
-    }
-    loadRandom();
+    (async () => {
+      const data = await fetchRandomMovies();
+      setMovies(data.movies || []);
+    })();
   }, []);
 
-  // 🌙 When user inserts a movie into the arc
-  async function handleSwapSearch(e) {
-    e.preventDefault();
-    const trimmed = searchQuery.trim();
-    if (!trimmed) return;
-
-    const data = await searchMovies(trimmed);
-    if (!data?.results?.length) return;
-
-    const movie = data.results[0];
-    const poster = movie.poster_path
-      ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-      : null;
-
-    const newCard = { id: movie.id, title: movie.title, image: poster };
-
-    setMovies((prev) => {
-      if (prev.length === 0) return [newCard];
-      const idx = Math.floor(Math.random() * prev.length);
-      const next = [...prev];
-      next[idx] = newCard;
-      return next;
-    });
-
-    setSearchQuery("");
-  }
-
-  // 🌌 When user picks a card
-  const handlePicked = async (item) => {
-    const next = [...hand, item];
+  // 🔮 Handle picking a card
+  async function handlePicked(movie) {
+    const next = [...hand, movie];
     setHand(next);
 
     setShake(true);
-    setTimeout(() => setShake(false), 600);
+    setTimeout(() => setShake(false), 500);
 
-    // when 5 cards chosen → hit backend for recommendations
+    // when 5 are picked → ask backend for recommendations
     if (next.length === 5) {
-      const ids = next.map((m) => m.id);
+      const ids = next.map((m) => m.tmdbId);
       const recs = await recommendMovies(ids);
-
-      if (recs?.recommendations) {
-        setRecommendations(recs.recommendations);
-      }
+      setRecommendations(recs.recommendations || []);
     }
-  };
+  }
+
+  // 🔮 Replace a random card with a searched movie
+  async function handleSwapSearch(e) {
+    e.preventDefault();
+
+    if (!searchQuery.trim()) return;
+
+    const data = await searchMovies(searchQuery);
+    if (!data.results || data.results.length === 0) return;
+
+    const found = data.results[0];
+    const idx = Math.floor(Math.random() * movies.length);
+
+    const updated = [...movies];
+    updated[idx] = {
+      tmdbId: found.id,
+      title: found.title,
+      image: `https://image.tmdb.org/t/p/w300${found.poster_path}`,
+    };
+
+    setMovies(updated);
+    setSearchQuery("");
+  }
 
   return (
     <div className="psychic-scene-scroll">
+      {/* 🔮 Top recommendation strip */}
       {recommendations.length > 0 && (
         <div className="recommendations-panel">
           <div className="recommendations-header">
@@ -89,8 +74,8 @@ export default function PsychicScene() {
           </div>
 
           <div className="recommendations-row">
-            {recommendations.map((rec, idx) => (
-              <div key={idx} className="recommendation-card">
+            {recommendations.map((rec) => (
+              <div key={rec.id} className="recommendation-card">
                 <div className="rec-title">{rec.title}</div>
                 <div className="rec-reason">{rec.reason}</div>
               </div>
@@ -99,9 +84,11 @@ export default function PsychicScene() {
         </div>
       )}
 
+      {/* 🔮 Core scene (orb, hands, search, cards) */}
       <div className="psychic-core">
         <form onSubmit={handleSwapSearch} className="psychic-search-bar">
           <input
+            type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Whisper a movie into the aether..."
@@ -112,20 +99,9 @@ export default function PsychicScene() {
         <PsychicHands shake={shake} />
         <PsychicFigure />
 
-        {projectedImage && (
-          <div className="projection">
-            <img src={projectedImage} alt="Projected Movie" />
-          </div>
-        )}
-
         <SpeechBubble text="Pick a card, and I will reveal your fate..." />
 
-        <CardArc
-          movies={movies}
-          onProject={setProjectedImage}
-          onPick={handlePicked}
-        />
-
+        <CardArc movies={movies} onPick={handlePicked} />
         <SelectedTray items={hand} />
       </div>
     </div>
