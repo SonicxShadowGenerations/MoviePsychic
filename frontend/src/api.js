@@ -26,6 +26,12 @@ export async function rankMovies(ids) {
   return res.json();
 }
 
+export async function getRandomMovies() {
+  const res = await fetch(`${BASE}/random/`);
+  return res.json();
+}
+
+
 export async function recommendMovies(ids) {
   const res = await fetch(`${BASE}/recommend/`, {
     method: "POST",
