@@ -1,5 +1,5 @@
 import unittest
-from .main import Movie, User, Comparator, Recommender
+from .main import Movie, User, Comparator, Recommender, Searcher
 
 
 class TestMovieMethods(unittest.TestCase):
@@ -126,6 +126,15 @@ class TestRecommenderMethods(unittest.TestCase):
         self.assertIn(m2, results)
         self.assertIn(m3, results)
 
+class TestSearcher(unittest.TestCase):
+    def test_search_returns_top_three(self):
+        handler = Searcher("inception")
+        results = handler.search()
+        self.assertIsInstance(results, list)
+        self.assertLessEqual(len(results), 3)
+        for movie in results:
+            self.assertIn("title", movie)
+            self.assertIn("id", movie)
 
 if __name__ == "__main__":
     unittest.main()

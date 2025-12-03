@@ -1,5 +1,5 @@
 from models import RawMovieData
-from tmdb_client import get_movie_details
+from backend.tmdb_client import get_movie_details
 import os, django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "APILayer.settings")
 django.setup()
@@ -20,6 +20,5 @@ class FASMovie():
 
 
 def main():
-    testMovie = RawMovieData(1026722)
-    title = testMovie.title
-    print(title)
+    testmovie = FASMovie(1026722)
+    testmovie.print_instance_attributes()

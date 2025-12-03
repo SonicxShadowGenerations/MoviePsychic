@@ -1,6 +1,6 @@
 from django.test import TestCase
 from unittest.mock import patch
-from APILayer.tmdb_client import get_movie_details, search_movies
+from backend.tmdb_client import get_movie_details, search_movies
 import os, django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "APILayer.settings")
 django.setup()
