@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from .tmdb_client import search_movies as tmdb_search, get_movie_details
 from .models import RawMovieData
 from .FetchStore import FASMovie
+import random
+from .tmdb_client import tmdb_request
+
 
 
 # ---------------------------
@@ -103,4 +106,13 @@ def recommend_movies(request):
     rec_results = tmdb_search(base_title)
 
     return JsonResponse(rec_results.get("results", []), safe=False)
+def random_movies(request):
+    page = random.randint(1, 50)
 
+    data = tmdb_request("/movie/popular", {"page": page})
+
+    results = data.get("results", [])
+
+    random_five = random.sample(results, min(5, len(results)))
+
+    return JsonResponse({"results": random_five})
