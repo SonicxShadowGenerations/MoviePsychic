@@ -1,5 +1,6 @@
 
-import requests
+from .tmdb_client import search_movies as tmdb_search, get_movie_details
+
 
 API_KEY = "19f7be89c64787879e83cc5f17232862"
 BASE_URL = "https://api.themoviedb.org/3"

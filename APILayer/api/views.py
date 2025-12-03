@@ -1,34 +1,24 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-
-from .tmdb_client import (
-    search_movies as tmdb_search,
-    get_movie_details,
-    tmdb_request
-)
-
+from .tmdb_client import search_movies as tmdb_search, get_movie_details
 from .models import RawMovieData
 from .FetchStore import FASMovie
 
 
-# -----------------------------------------------------
-#  SEARCH
-# -----------------------------------------------------
+# ---------------------------
+# SEARCH
+# ---------------------------
 def search_movies(request):
-    # support BOTH ?q= and ?query=
-    query = request.GET.get("q") or request.GET.get("query") or ""
-
+    query = request.GET.get("q", "")
     if not query:
-        return JsonResponse({"error": "Missing search query"}, status=400)
+        return JsonResponse({"error": "Missing q"}, status=400)
 
     data = tmdb_search(query)
     return JsonResponse(data, safe=False)
 
 
-# -----------------------------------------------------
-#  GET MOVIE FROM DATABASE (your existing endpoint)
-# -----------------------------------------------------
+# ---------------------------
+# GET SINGLE MOVIE (from DB)
+# ---------------------------
 def get_movie(request, tmdb_id):
     try:
         movie = RawMovieData.objects.get(tmdbId=tmdb_id)
@@ -43,9 +33,9 @@ def get_movie(request, tmdb_id):
         return JsonResponse({"error": "Movie not found"}, status=404)
 
 
-# -----------------------------------------------------
-#  STORE MOVIE INTO DATABASE (your existing endpoint)
-# -----------------------------------------------------
+# ---------------------------
+# STORE A MOVIE IN DATABASE
+# ---------------------------
 def store_movie(request, tmdb_id):
     movie = FASMovie.fetch_and_store_movie(tmdb_id)
     return JsonResponse({
@@ -57,64 +47,59 @@ def store_movie(request, tmdb_id):
     })
 
 
-# -----------------------------------------------------
-#  RANK MOVIES (NEW)
-# -----------------------------------------------------
-@csrf_exempt
+# ---------------------------
+# RANK MOVIES (Simple Demo Ranking)
+# ---------------------------
 def rank_movies(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST only"}, status=405)
+    """
+    Simple ranking algorithm:
+      - Higher popularity = better rank
+      - Higher vote_average = better rank
+    """
+    query = request.GET.get("q", "")
+    if not query:
+        return JsonResponse({"error": "Missing q"}, status=400)
 
-    try:
-        body = json.loads(request.body)
-    except:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    results = tmdb_search(query)
+    rank_list = []
 
-    ids = body.get("ids", [])
-    if not isinstance(ids, list) or not ids:
-        return JsonResponse({"error": "ids must be a non-empty list"}, status=400)
+    for movie in results.get("results", []):
+        score = movie.get("popularity", 0) * 0.7 + movie.get("vote_average", 0) * 3
+        rank_list.append({
+            "tmdbId": movie["id"],
+            "title": movie["title"],
+            "poster_path": movie.get("poster_path"),
+            "overview": movie.get("overview"),
+            "score": round(score, 2),
+        })
 
-    # fetch movie details from TMDB
-    movies = [get_movie_details(i) for i in ids]
+    # Sort by score descending
+    rank_list.sort(key=lambda x: x["score"], reverse=True)
 
-    # simple ranking by vote_average
-    ranked = sorted(movies, key=lambda m: m.get("vote_average", 0), reverse=True)
-
-    return JsonResponse({"ranked": ranked})
+    return JsonResponse(rank_list, safe=False)
 
 
-# -----------------------------------------------------
-#  RECOMMEND MOVIES (NEW)
-# -----------------------------------------------------
+# ---------------------------
+# SIMPLE RECOMMENDATION API
+# ---------------------------
 def recommend_movies(request):
-    tmdb_id = request.GET.get("tmdbId")
-    if not tmdb_id:
-        return JsonResponse({"error": "Missing tmdbId"}, status=400)
+    """
+    Simple recommendation mock:
+    Recommend movies similar to the TOP scored movie.
+    """
+    query = request.GET.get("q", "")
+    if not query:
+        return JsonResponse({"error": "Missing q"}, status=400)
 
-    # base movie information
-    base = get_movie_details(tmdb_id)
+    results = tmdb_search(query)
+    if not results.get("results"):
+        return JsonResponse([], safe=False)
 
-    if not base:
-        return JsonResponse({"error": "Movie not found"}, status=404)
+    # Pick top movie
+    first = results["results"][0]
+    base_title = first["title"].split()[0]  # first word
 
-    genres = [g["id"] for g in base.get("genres", [])]
+    # Search again using first word for "similar"
+    rec_results = tmdb_search(base_title)
 
-    # fallback if no genres
-    if not genres:
-        return JsonResponse({"recommendations": []})
-
-    recs = []
-    # use TMDB discover endpoint for each genre
-    for g in genres:
-        genre_results = tmdb_request(
-            "discover/movie",
-            params={"with_genres": g}
-        ).get("results", [])
-
-        recs.extend(genre_results)
-
-    # remove duplicates & remove the original movie
-    unique = {movie["id"]: movie for movie in recs}
-    results = [m for m in unique.values() if m["id"] != int(tmdb_id)]
-
-    return JsonResponse({"recommendations": results[:20]})
+    return JsonResponse(rec_results.get("results", []), safe=False)
