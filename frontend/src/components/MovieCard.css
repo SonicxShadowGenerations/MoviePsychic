@@ -1,0 +1,72 @@
+/* Base card */
+.movie-card {
+  perspective: 1000px;
+  width: 110px;
+  height: 160px;
+  cursor: pointer;
+  outline: none;
+
+  /* smooth movement & scaling when phase changes */
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* idle: floating gently */
+.movie-card.phase-idle {
+  animation: floatCard 3.5s ease-in-out infinite;
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%      { transform: translateY(-10px) scale(1); }
+}
+
+/* flipped, but still in place */
+.movie-card.phase-flipped {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* flying: shrink + move down toward the tray */
+.movie-card.phase-flying {
+  animation: none; /* stop floating */
+  transform: translateY(220px) scale(0.45);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease;
+  transform-style: preserve-3d;
+}
+
+/* flip effect */
+.movie-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border: 2px solid #ffd95c;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #ffd95c;
+  background: #2e0147;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 15px rgba(0, 255, 220, 0.4);
+}
