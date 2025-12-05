@@ -1,57 +1,24 @@
 import React from "react";
-import MovieCard from "./MovieCard";
+import "./CardArc.css";
 
-export default function CardArc({ movies, onProject, onPick }) {
-  const total = movies.length;
-  const middleIndex = Math.floor(total / 2);
-
+export default function CardArc({ movies = [], onPick }) {
   return (
-    <div
-      style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "14px",
-        zIndex: 3,
-        transform: "translateY(-140px)",
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-end",
-          height: "300px",
-          gap: "25px",
-          perspective: "1000px",
-        }}
-      >
-        {movies.map((m, i) => {
-          const offset = i - middleIndex;
-          const rotate = offset * 6;
-          const translateY = Math.pow(Math.abs(offset), 1.4) * 8 + 5;
-
-          return (
-            <div
-              key={`${m.title}-${i}`}
-              style={{
-                transform: `rotate(${rotate}deg) translateY(${translateY}px)`,
-                transformOrigin: "center top",
-                transition: "transform 0.5s ease",
-              }}
-            >
-              <MovieCard
-                title={m.title}
-                image={m.image}
-                onProject={onProject}
-                onPick={onPick}
-              />
-            </div>
-          );
-        })}
-      </div>
+    <div className="card-arc">
+      {movies.map((m, i) => (
+        <div
+          key={m.tmdbId || i}
+          className="arc-card"
+          style={{ transform: `rotate(${(i - 2) * 10}deg)` }}
+          onClick={() => onPick(m)}
+        >
+          {m.image ? (
+            <img src={m.image} alt={m.title} className="arc-poster" />
+          ) : (
+            <div className="arc-fallback">{m.title}</div>
+          )}
+          <div className="arc-label">{m.title}</div>
+        </div>
+      ))}
     </div>
   );
 }

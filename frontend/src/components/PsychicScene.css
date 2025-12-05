@@ -1,4 +1,8 @@
 /* PsychicScene.css */
+.psychic-core {
+  min-height: 1200px; /* increase scene height so cards are visible */
+}
+
 
 .projection {
   position: absolute;

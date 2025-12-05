@@ -1,70 +1,21 @@
-// src/components/MovieCard.jsx
-import React, { useState } from "react";
-import "./MovieCard.css";
+import React from "react";
 
-export default function MovieCard({ title, image, onProject, onPick }) {
-  const [phase, setPhase] = useState("idle"); // idle | flipped | flying
-
-  const isFlipped = phase === "flipped" || phase === "flying";
-
-  const handleClick = () => {
-    // ignore clicks while flying
-    if (phase === "flying") return;
-
-    if (phase === "idle") {
-      // go to flipped
-      setPhase("flipped");
-      onProject && onProject(image);
-
-      // after a short delay, start the fly-down animation
-      setTimeout(() => {
-        setPhase("flying");
-
-        // after the animation duration, finalize
-        setTimeout(() => {
-          onPick && onPick({ title, image });
-          setPhase("idle");
-          onProject && onProject(null);
-        }, 400); // match CSS transition duration
-      }, 80); // tiny delay so you see the flip
-    } else if (phase === "flipped") {
-      // if they click again before it flies, just go back
-      setPhase("idle");
-      onProject && onProject(null);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleClick();
-    }
-  };
-
+export default function MovieCard({ movie, onStore }) {
   return (
-    <div
-      className={`movie-card phase-${phase} ${isFlipped ? "flipped" : ""}`}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-pressed={isFlipped}
-      aria-label={`Reveal ${title}`}
-    >
-      <div className="card-inner">
-        <div className="card-front">{title}</div>
-        <div
-          className="card-back"
-          style={{
-            backgroundImage: image
-              ? `url(${image})`
-              : "radial-gradient(circle at center, #00ffe6 10%, #2e0147 70%)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-      </div>
+    <div className="movie-card">
+      <img
+        src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
+        alt={movie.title}
+        className="poster"
+      />
+
+      <h3>{movie.title}</h3>
+      <p>{movie.release_date}</p>
+      <p className="overview">{movie.overview?.slice(0, 120)}...</p>
+
+      <button onClick={() => onStore(movie.id)} className="store-btn">
+        Store Movie
+      </button>
     </div>
   );
 }
-

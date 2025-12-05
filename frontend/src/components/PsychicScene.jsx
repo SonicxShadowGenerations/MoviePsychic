@@ -1,99 +1,69 @@
-import React, { useState } from "react";
-import PsychicHands from "./PsychicHands.jsx";
+import React, { useEffect, useState } from "react";
+import PsychicHands from "./PsychicHands";
 import PsychicFigure from "./PsychicFigure";
 import SpeechBubble from "./SpeechBubble";
 import CardArc from "./CardArc";
 import SelectedTray from "./SelectedTray";
+import { fetchRandomMovies, searchMovies, recommendMovies } from "../api";
 import "./PsychicScene.css";
 
-// initial arc movies (now scene-level so search can modify them)
-const initialMovies = [
-  { title: "Inception", image: "/images/inception.jpg" },
-  { title: "Interstellar", image: "/images/interstellar.jpg" },
-  { title: "Tenet", image: "/images/tenet.jpg" },
-  { title: "Dune", image: "/images/dune.jpg" },
-  { title: "Matrix", image: "/images/matrix.jpg" },
-];
-
-// 🔮 stub – later we’ll hit your backend instead
-async function fetchRecommendationsForSelection(selection) {
-  const titles = selection.map((s) => s.title).filter(Boolean);
-
-  return [
-    {
-      id: "rec-1",
-      title: titles[0]
-        ? `A darker echo of ${titles[0]}`
-        : "A darker echo of your choices",
-      reason: "Twists, tension, and a lingering unease in every frame.",
-    },
-    {
-      id: "rec-2",
-      title: titles[1]
-        ? `If you liked ${titles[1]}…`
-        : "If you liked what you picked…",
-      reason: "Rich world-building and characters that stay in your head.",
-    },
-    {
-      id: "rec-3",
-      title: "One step further into the void",
-      reason: "A film that pushes your themes to their strangest conclusion.",
-    },
-  ];
-}
-
 export default function PsychicScene() {
-  const [projectedImage, setProjectedImage] = useState(null);
+  const [movies, setMovies] = useState([]);
   const [hand, setHand] = useState([]);
   const [shake, setShake] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [recommendations, setRecommendations] = useState([]);
 
-  // arc movie state for search swapping
-  const [movies, setMovies] = useState(initialMovies);
-  const [searchQuery, setSearchQuery] = useState("");
+  // 🔮 Load 5 random TMDB movies when scene starts
+  useEffect(() => {
+    (async () => {
+      const data = await fetchRandomMovies();
+      setMovies(data.movies || []);
+    })();
+  }, []);
 
-  const handlePicked = (item) => {
-    setHand((prev) => {
-      const next = [...prev, item];
-
-      // when 5 cards have been picked, load ghost recs (for now)
-      if (next.length === 5 && recommendations.length === 0) {
-        (async () => {
-          const recs = await fetchRecommendationsForSelection(next);
-          setRecommendations(recs);
-        })();
-      }
-
-      return next;
-    });
+  // 🔮 Handle picking a card
+  async function handlePicked(movie) {
+    const next = [...hand, movie];
+    setHand(next);
 
     setShake(true);
-    setTimeout(() => setShake(false), 600);
-  };
+    setTimeout(() => setShake(false), 500);
 
-  // when user submits the floating search bar
-  const handleSwapSearch = (e) => {
+    // when 5 are picked → ask backend for recommendations
+    if (next.length === 5) {
+      const ids = next.map((m) => m.tmdbId);
+      const recs = await recommendMovies(ids);
+      setRecommendations(recs.recommendations || []);
+    }
+  }
+
+  // 🔮 Replace a random card with a searched movie
+  async function handleSwapSearch(e) {
     e.preventDefault();
-    const trimmed = searchQuery.trim();
-    if (!trimmed) return;
 
-    setMovies((prev) => {
-      if (prev.length === 0) return prev;
-      const idx = Math.floor(Math.random() * prev.length);
-      const next = [...prev];
-      next[idx] = {
-        title: trimmed,
-        image: null, // no poster yet → MovieCard uses gradient back
-      };
-      return next;
-    });
+    if (!searchQuery.trim()) return;
 
+    const data = await searchMovies(searchQuery);
+    if (!data.results || data.results.length === 0) return;
+
+    const found = data.results[0];
+    const idx = Math.floor(Math.random() * movies.length);
+
+    const updated = [...movies];
+    updated[idx] = {
+      tmdbId: found.id,
+      title: found.title,
+      image: `https://image.tmdb.org/t/p/w300${found.poster_path}`,
+    };
+
+    setMovies(updated);
     setSearchQuery("");
-  };
+  }
 
   return (
     <div className="psychic-scene-scroll">
-      {/* translucent recommendations strip at the top */}
+      {/* 🔮 Top recommendation strip */}
       {recommendations.length > 0 && (
         <div className="recommendations-panel">
           <div className="recommendations-header">
@@ -114,9 +84,8 @@ export default function PsychicScene() {
         </div>
       )}
 
-      {/* main psychic scene */}
+      {/* 🔮 Core scene (orb, hands, search, cards) */}
       <div className="psychic-core">
-        {/* 🔍 Floating Search Bar over the orb */}
         <form onSubmit={handleSwapSearch} className="psychic-search-bar">
           <input
             type="text"
@@ -130,20 +99,9 @@ export default function PsychicScene() {
         <PsychicHands shake={shake} />
         <PsychicFigure />
 
-        {projectedImage && (
-          <div className="projection">
-            <img src={projectedImage} alt="Projected Movie" />
-          </div>
-        )}
-
         <SpeechBubble text="Pick a card, and I will reveal your fate..." />
 
-        <CardArc
-          movies={movies}
-          onProject={setProjectedImage}
-          onPick={handlePicked}
-        />
-
+        <CardArc movies={movies} onPick={handlePicked} />
         <SelectedTray items={hand} />
       </div>
     </div>
