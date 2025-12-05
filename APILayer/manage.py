@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from APILayer import settings.py
+import settings
 
 
 def main():
