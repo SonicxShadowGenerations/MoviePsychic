@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { recommendMovies } from "../api";
-import MovieCard from "../components/MovieCard";
+import { fetchRecommendations } from "../api";
+import "../components/RecommendationsPanel.css";
 
 export default function RecommendPage() {
   const [ids, setIds] = useState("");
   const [recs, setRecs] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   async function handleRecommend() {
     const arr = ids
@@ -13,34 +12,33 @@ export default function RecommendPage() {
       .map(x => x.trim())
       .filter(x => x.length > 0);
 
-    if (!arr.length) return;
+    if (arr.length === 0) return;
 
-    setLoading(true);
-    try {
-      const data = await recommendMovies(arr);
-      setRecs(data.recommendations || []);
-    } finally {
-      setLoading(false);
-    }
+    const data = await fetchRecommendations(arr);
+    setRecs(data.results || []);
   }
 
   return (
     <div className="recommend-page">
-      <h2 style={{ color: "white" }}>Recommendations</h2>
+      <h2>Get Recommendations</h2>
 
       <input
+        placeholder="Enter TMDB IDs (comma separated)"
         value={ids}
         onChange={(e) => setIds(e.target.value)}
-        placeholder="Enter TMDB IDs separated by commas"
       />
 
       <button onClick={handleRecommend}>Reveal My Fate</button>
 
-      {loading && <p style={{ color: "white" }}>Consulting the spirits…</p>}
-
-      <div className="results-grid">
+      <div className="recommend-list">
         {recs.map((m) => (
-          <MovieCard key={m.tmdbId} movie={m} onStore={() => {}} />
+          <div className="recommend-card" key={m.id}>
+            <img
+              src={`https://image.tmdb.org/t/p/w300${m.poster_path}`}
+              alt={m.title}
+            />
+            <p>{m.title}</p>
+          </div>
         ))}
       </div>
     </div>

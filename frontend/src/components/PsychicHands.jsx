@@ -4,11 +4,11 @@ import "./PsychicHands.css";
 import leftHand from "../assets/left-hand.svg";
 import rightHand from "../assets/right-hand.svg";
 
-export default function PsychicHands({ shake = false }) {
+export default function PsychicHands({ wiggle = false }) {
   return (
-    <div className={`hands-container ${shake ? "shake" : ""}`}>
-      <img src={leftHand} alt="Left hand" className="hand left-hand" />
-      <img src={rightHand} alt="Right hand" className="hand right-hand" />
+    <div className={`hands-container ${wiggle ? "wiggle" : ""}`}>
+      <img src={leftHand} className="hand left-hand" alt="Left hand" />
+      <img src={rightHand} className="hand right-hand" alt="Right hand" />
     </div>
   );
 }

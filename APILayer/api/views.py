@@ -1,118 +1,98 @@
-from django.http import JsonResponse
-from .tmdb_client import search_movies as tmdb_search, get_movie_details
-from .models import RawMovieData
-from .FetchStore import FASMovie
+import json
 import random
-from .tmdb_client import tmdb_request
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
+from .tmdb_client import search_movies as tmdb_search
+from .tmdb_client import tmdb_request
+from .FetchStore import FASMovie
+from .models import RawMovieData
 
 
 # ---------------------------
-# SEARCH
+# SEARCH (GET)
 # ---------------------------
 def search_movies(request):
     query = request.GET.get("q", "")
     if not query:
-        return JsonResponse({"error": "Missing q"}, status=400)
-
+        return JsonResponse({"results": []})
     data = tmdb_search(query)
     return JsonResponse(data, safe=False)
 
 
 # ---------------------------
-# GET SINGLE MOVIE (from DB)
+# STORE MOVIE (POST)
 # ---------------------------
-def get_movie(request, tmdb_id):
-    try:
-        movie = RawMovieData.objects.get(tmdbId=tmdb_id)
-        return JsonResponse({
-            "tmdbId": movie.tmdbId,
-            "title": movie.title,
-            "overview": movie.overview,
-            "release_date": movie.release_date,
-            "poster_path": movie.poster_path,
-        })
-    except RawMovieData.DoesNotExist:
-        return JsonResponse({"error": "Movie not found"}, status=404)
-
-
-# ---------------------------
-# STORE A MOVIE IN DATABASE
-# ---------------------------
+@csrf_exempt
 def store_movie(request, tmdb_id):
     movie = FASMovie.fetch_and_store_movie(tmdb_id)
     return JsonResponse({
         "tmdbId": movie.tmdbId,
         "title": movie.title,
-        "overview": movie.overview,
         "release_date": movie.release_date,
-        "poster_path": movie.poster_path,
+        "overview": movie.overview,
+        "poster_path": movie.poster_path
     })
 
 
 # ---------------------------
-# RANK MOVIES (Simple Demo Ranking)
+# RANDOM MOVIES FOR ARC (GET)
 # ---------------------------
-def rank_movies(request):
-    """
-    Simple ranking algorithm:
-      - Higher popularity = better rank
-      - Higher vote_average = better rank
-    """
-    query = request.GET.get("q", "")
-    if not query:
-        return JsonResponse({"error": "Missing q"}, status=400)
-
-    results = tmdb_search(query)
-    rank_list = []
-
-    for movie in results.get("results", []):
-        score = movie.get("popularity", 0) * 0.7 + movie.get("vote_average", 0) * 3
-        rank_list.append({
-            "tmdbId": movie["id"],
-            "title": movie["title"],
-            "poster_path": movie.get("poster_path"),
-            "overview": movie.get("overview"),
-            "score": round(score, 2),
-        })
-
-    # Sort by score descending
-    rank_list.sort(key=lambda x: x["score"], reverse=True)
-
-    return JsonResponse(rank_list, safe=False)
-
-
-# ---------------------------
-# SIMPLE RECOMMENDATION API
-# ---------------------------
-def recommend_movies(request):
-    """
-    Simple recommendation mock:
-    Recommend movies similar to the TOP scored movie.
-    """
-    query = request.GET.get("q", "")
-    if not query:
-        return JsonResponse({"error": "Missing q"}, status=400)
-
-    results = tmdb_search(query)
-    if not results.get("results"):
-        return JsonResponse([], safe=False)
-
-    # Pick top movie
-    first = results["results"][0]
-    base_title = first["title"].split()[0]  # first word
-
-    # Search again using first word for "similar"
-    rec_results = tmdb_search(base_title)
-
-    return JsonResponse(rec_results.get("results", []), safe=False)
 def random_movies(request):
     page = random.randint(1, 50)
-
     data = tmdb_request("/movie/popular", {"page": page})
-
     results = data.get("results", [])
+    five = random.sample(results, min(5, len(results)))
+    return JsonResponse({"results": five})
 
-    random_five = random.sample(results, min(5, len(results)))
 
-    return JsonResponse({"results": random_five})
+# ---------------------------
+# RANK MOVIES (POST)
+# ---------------------------
+@csrf_exempt
+def rank_movies(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    body = json.loads(request.body)
+    ids = body.get("ids", [])
+
+    all_movies = []
+    for tmdb_id in ids:
+        m = tmdb_request(f"/movie/{tmdb_id}")
+        score = m.get("popularity", 0) * 0.6 + m.get("vote_average", 0) * 3
+        all_movies.append({
+            "tmdbId": tmdb_id,
+            "title": m["title"],
+            "poster_path": m.get("poster_path"),
+            "overview": m.get("overview"),
+            "score": score
+        })
+
+    all_movies.sort(key=lambda x: x["score"], reverse=True)
+    return JsonResponse({"ranked": all_movies})
+
+
+# ---------------------------
+# REAL RECOMMENDATIONS (POST)
+# ---------------------------
+@csrf_exempt
+def recommend_movies(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    body = json.loads(request.body)
+    ids = body.get("ids", [])
+
+    if not ids:
+        return JsonResponse({"results": []})
+
+    # Use first movie as the seed
+    base_id = ids[0]
+
+    # TMDB has a REAL recommendation endpoint
+    data = tmdb_request(f"/movie/{base_id}/recommendations")
+
+    recs = data.get("results", [])[:5]
+
+    return JsonResponse({"results": recs})

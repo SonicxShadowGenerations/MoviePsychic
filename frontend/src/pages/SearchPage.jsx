@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { searchMovies, storeMovie } from "../api";
+import { searchMovies } from "../api";
 import MovieCard from "../components/MovieCard";
 
 export default function SearchPage() {

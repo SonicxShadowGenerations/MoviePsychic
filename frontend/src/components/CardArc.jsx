@@ -6,17 +6,21 @@ export default function CardArc({ movies = [], onPick }) {
     <div className="card-arc">
       {movies.map((m, i) => (
         <div
-          key={m.tmdbId || i}
-          className="arc-card"
-          style={{ transform: `rotate(${(i - 2) * 10}deg)` }}
-          onClick={() => onPick(m)}
+          key={m.id}
+          className="flip-card"
+          style={{ transform: `rotate(${i * 10 - 20}deg)` }}
+          onClick={() => onPick && onPick(m)}
         >
-          {m.image ? (
-            <img src={m.image} alt={m.title} className="arc-poster" />
-          ) : (
-            <div className="arc-fallback">{m.title}</div>
-          )}
-          <div className="arc-label">{m.title}</div>
+          <div className="flip-card-inner">
+            <div className="flip-card-front">
+              <img src={m.image} alt={m.title} />
+              <p className="card-title">{m.title}</p>
+            </div>
+
+            <div className="flip-card-back">
+              <p>{m.overview || "A mysterious film with unknown origins…"}</p>
+            </div>
+          </div>
         </div>
       ))}
     </div>
